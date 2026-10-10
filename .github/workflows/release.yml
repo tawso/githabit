@@ -11,6 +11,9 @@ on:
         required: false
         default: '1.0.0'
 
+permissions:
+  contents: write
+
 jobs:
   build_release:
     name: Build Android App Bundle & Release APK
@@ -59,3 +62,14 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: GitHabit ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
